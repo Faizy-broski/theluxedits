@@ -93,7 +93,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
           <div className="grid gap-10 md:grid-cols-2 md:gap-16 lg:gap-24">
             {/* Image */}
-            <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+            <div className="relative aspect-4/5 overflow-hidden bg-neutral-100">
               {product.image_url && !imgError ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -184,7 +184,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 <Button
                   onClick={handleAddToCart}
                   disabled={outOfStock}
-                  className={`h-12 flex-1 rounded-none text-[11px] font-semibold uppercase tracking-[0.25em] transition-colors sm:h-14 ${
+                  className={`h-12 flex-1 rounded-none text-[11px] font-semibold uppercase tracking-[0.25em] transition-colors sm:h-14 py-4 ${
                     outOfStock
                       ? "cursor-not-allowed bg-black/25 text-white"
                       : added

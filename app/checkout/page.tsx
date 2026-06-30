@@ -341,7 +341,7 @@ function CheckoutForm({
                     <div>
                       <p className="line-clamp-2 text-xs text-black">{item.name}</p>
                       {item.brand && (
-                        <p className="font-jet text-[9px] uppercase tracking-[0.1em] text-black/35">
+                        <p className="font-jet text-[9px] uppercase tracking-widest text-black/35">
                           {item.brand}
                         </p>
                       )}
@@ -363,7 +363,7 @@ function CheckoutForm({
               </div>
               <div className="flex justify-between">
                 <span className="text-black/55">Shipping</span>
-                <span className="font-jet text-[10px] uppercase tracking-[0.1em] text-black/40">
+                <span className="font-jet text-[10px] uppercase tracking-widest text-black/40">
                   {shipping === 0 ? "Free" : fmtPrice(shipping)}
                 </span>
               </div>

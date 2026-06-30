@@ -64,7 +64,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
           <div className="grid gap-10 md:grid-cols-2 md:gap-16 lg:gap-24">
             {/* Image */}
-            <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+            <div className="relative aspect-4/5 overflow-hidden bg-neutral-100">
               <Image
                 src={product.image}
                 alt={product.name}
@@ -110,7 +110,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`h-9 min-w-[44px] px-3 font-jet text-[10px] uppercase tracking-[0.15em] transition-colors ${
+                        className={`h-9 min-w-11 px-3 font-jet text-[10px] uppercase tracking-[0.15em] transition-colors ${
                           selectedSize === size
                             ? "bg-black text-white"
                             : "border border-black/20 text-black hover:border-black"

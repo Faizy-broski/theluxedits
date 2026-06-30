@@ -29,20 +29,21 @@ export default function CheckoutSuccessPage() {
 
         <div className="mt-4 h-px w-16 bg-black/15" />
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Link
-            href="/portal/orders"
-            className="inline-flex h-12 items-center bg-black px-8 font-jet text-[10px] uppercase tracking-[0.3em] text-white transition-colors hover:bg-black/80 sm:h-14"
-          >
-            View My Orders
-          </Link>
-          <Link
-            href="/products"
-            className="inline-flex h-12 items-center border border-black/20 px-8 font-jet text-[10px] uppercase tracking-[0.3em] text-black transition-colors hover:bg-black hover:text-white sm:h-14"
-          >
-            Continue Shopping
-          </Link>
-        </div>
+        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+  <Link
+    href="/portal/orders"
+    className="inline-flex h-12 w-full items-center justify-center bg-black px-8 font-jet text-[10px] uppercase tracking-[0.3em] text-white transition-colors hover:bg-black/80 sm:h-14 sm:w-64"
+  >
+    View My Orders
+  </Link>
+
+  <Link
+    href="/products"
+    className="inline-flex h-12 w-full items-center justify-center border border-black/20 px-8 font-jet text-[10px] uppercase tracking-[0.3em] text-black transition-colors hover:bg-black hover:text-white sm:h-14 sm:w-64"
+  >
+    Continue Shopping
+  </Link>
+</div>
 
         <div className="mt-12 space-y-1.5">
           <p className="font-jet text-[9px] uppercase tracking-[0.25em] text-black/25">
