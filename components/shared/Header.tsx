@@ -19,8 +19,8 @@ import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { label: "Shop Women", href: "/products/?category=Women" },
-  { label: "Shop Men", href: "/products/?category=Men" },
+  // { label: "Shop Women", href: "/products?category=Women" },
+  // { label: "Shop Men", href: "/products?category=Men" },
   { label: "Shop All", href: "/products" },
 ];
 

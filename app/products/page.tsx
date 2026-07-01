@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { SlidersHorizontal, X, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/homePage/Footer";
 import ProductCard from "@/components/shared/ProductCard";
@@ -24,17 +22,34 @@ interface ApiProduct {
 }
 
 const SORT_OPTIONS = [
-  { value: "newest",     label: "Newest" },
+  { value: "newest",     label: "Newest"            },
   { value: "price_asc",  label: "Price: Low → High" },
   { value: "price_desc", label: "Price: High → Low" },
-  { value: "name_asc",   label: "Name A–Z" },
+  { value: "name_asc",   label: "Name A–Z"          },
 ];
 
-/**
- * Splits a heading string so the last word can be italicised.
- * "Men · Louis Vuitton" → { rest: "Men · Louis", last: "Vuitton" }
- * "Nike"                → { rest: "",             last: "Nike"    }
- */
+// ── Static category pills ────────────────────────────────────────────────────
+// Hardcoded so the pills always reflect your real top-level taxonomy, not
+// whatever mixed brand/category strings the DB happens to return.
+//
+// `label`  — what the user sees on the pill
+// `value`  — the category string sent to the API (must match DB values exactly)
+//
+// Edit this list to add, remove, or rename pills. Max 12 shown.
+const PILL_CATEGORIES: { label: string; value: string }[] = [
+   { label: "Jewellery", value: "Jewellery" },
+  // { label: "Women",       value: "Women"       },
+  // { label: "Men",         value: "Men"         },
+  { label: "Shoes",       value: "Shoes"       },
+  { label: "Bags",        value: "Bags"        },
+  { label: "Watches",     value: "Accessories" }, // DB stores watches as "Accessories"
+  { label: "Perfumes",    value: "Perfumes"    },
+  { label: "Electronics", value: "Electronics" },
+  // Add up to 5 more here if needed, e.g.:
+  // { label: "Jewellery", value: "Jewellery" },
+  // { label: "Sunglasses", value: "Sunglasses" },
+];
+
 function splitHeading(label: string): { rest: string; last: string } {
   const words = label.trim().split(" ");
   if (words.length === 1) return { rest: "", last: label };
@@ -42,70 +57,65 @@ function splitHeading(label: string): { rest: string; last: string } {
 }
 
 function ProductsInner() {
-  const router = useRouter();
-  const pathname = usePathname();
+  const router      = useRouter();
+  const pathname    = usePathname();
   const searchParams = useSearchParams();
 
   const [products, setProducts] = useState<ApiProduct[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [brands, setBrands]     = useState<string[]>([]);
+  const [loading, setLoading]   = useState(true);
   const [showFilters, setShowFilters] = useState(false);
 
-  // ── URL is the single source of truth for category + brand ──────────────
-  // /products?category=Women&brand=BrandName
-  // This gives every filter combination a real, shareable, bookmarkable URL
-  // ("the slug") instead of just local component state.
+  // URL is the single source of truth — /products?category=Women&brand=Nike
   const activeCategory = searchParams.get("category") || "All";
-  const activeBrand    = searchParams.get("brand") || "";
+  const activeBrand    = searchParams.get("brand")    || "";
 
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("newest");
+  const [search, setSearch]     = useState("");
+  const [sort, setSort]         = useState("newest");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [page, setPage] = useState(1);
+  const [page, setPage]         = useState(1);
   const [lastPage, setLastPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal]       = useState(0);
 
-  // Reset to page 1 whenever the URL-driven filters change.
-  useEffect(() => {
-    setPage(1);
-  }, [activeCategory, activeBrand]);
+  useEffect(() => { setPage(1); }, [activeCategory, activeBrand]);
 
-  // Pushes a new ?category=&brand= combination onto the URL, preserving
-  // whichever of the two isn't being changed. Pass "All" / "" to clear.
+  // Push category / brand changes onto the URL, preserving the other param.
   const updateUrl = useCallback(
     (updates: { category?: string; brand?: string }) => {
       const params = new URLSearchParams(searchParams.toString());
 
       if (updates.category !== undefined) {
-        if (updates.category === "All") params.delete("category");
-        else params.set("category", updates.category);
+        updates.category === "All"
+          ? params.delete("category")
+          : params.set("category", updates.category);
       }
       if (updates.brand !== undefined) {
-        if (!updates.brand) params.delete("brand");
-        else params.set("brand", updates.brand);
+        !updates.brand
+          ? params.delete("brand")
+          : params.set("brand", updates.brand);
       }
 
       const qs = params.toString();
       router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams],
   );
 
+  // Products fetch.
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params: Record<string, string | number> = { page, per_page: 24, sort };
       if (activeCategory !== "All") params.category = activeCategory;
-      if (activeBrand) params.brand = activeBrand;
-      if (search) params.search = search;
-      if (minPrice) params.min_price = minPrice;
-      if (maxPrice) params.max_price = maxPrice;
+      if (activeBrand)              params.brand     = activeBrand;
+      if (search)                   params.search    = search;
+      if (minPrice)                 params.min_price = minPrice;
+      if (maxPrice)                 params.max_price = maxPrice;
 
       const { data } = await api.get("/products", { params });
       const withImages = (data.data as ApiProduct[]).filter(
-        (p) => p.image_url && p.image_url.trim() !== ""
+        (p) => p.image_url && p.image_url.trim() !== "",
       );
       setProducts(withImages);
       setLastPage(data.last_page);
@@ -117,45 +127,25 @@ function ProductsInner() {
     }
   }, [page, sort, activeCategory, activeBrand, search, minPrice, maxPrice]);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-  // Categories are scoped to the active brand — when a brand is selected,
-  // the pills only show categories that brand actually sells in.
-  // Refetches whenever the brand changes.
-  useEffect(() => {
-    const params = activeBrand ? { brand: activeBrand } : {};
-
-    api
-      .get("/products/categories", { params })
-      .then(({ data }) => {
-        setCategories(data);
-
-        // If the category currently selected no longer exists for this
-        // brand, drop it from the URL instead of showing an empty grid.
-        if (activeCategory !== "All" && !data.includes(activeCategory)) {
-          updateUrl({ category: "All" });
-        }
-      })
-      .catch(() => setCategories([]));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeBrand]);
-
-  // Brands are scoped to the active category — the filter panel only ever
-  // shows brands that actually exist within the selected category.
-  // Refetches whenever the category changes.
+  // Brands scoped to the active category — filter panel only shows brands
+  // that actually exist within the selected category.
   useEffect(() => {
     const params = activeCategory !== "All" ? { category: activeCategory } : {};
 
     api
       .get("/products/brands", { params })
       .then(({ data }) => {
+        console.log(
+          `[Brands] ${activeCategory !== "All" ? `scoped to "${activeCategory}"` : "all categories"} →`,
+          `${data.length} brands:`,
+          data,
+        );
         setBrands(data);
 
-        // Same idea in reverse: if the selected brand doesn't exist in the
-        // new category, drop it from the URL instead of filtering against
-        // a brand that isn't present.
+        // Drop the active brand from the URL if it doesn't exist in the
+        // new category's brand list.
         if (activeBrand && !data.includes(activeBrand)) {
           updateUrl({ brand: "" });
         }
@@ -172,40 +162,25 @@ function ProductsInner() {
     setSort("newest");
   }
 
-  function handleCategoryChange(cat: string) {
-    // Keep the active brand when switching category — lets users narrow
-    // e.g. already on Nike, switch to Women → /products?category=Women&brand=Nike
-    // (If Nike doesn't sell Women's pieces, the brands effect above clears
-    // it automatically once the scoped brand list comes back.)
-    updateUrl({ category: cat });
-  }
-
-  function handleBrandChange(brand: string) {
-    updateUrl({ brand });
-  }
-
-  // ── Dynamic heading ──────────────────────────────────────────────────────
-  //
-  // Both filters can be active at the same time:
-  //   category=Women + brand=Nike →  "Women · Nike."
-  //   brand=Nike only             →  "Nike."
-  //   category=Women only        →  "Women."
-  //   neither                    →  "All Products."
-  //
+  // ── Heading / breadcrumb ─────────────────────────────────────────────────
   const hasCategory = activeCategory !== "All";
   const hasBrand    = !!activeBrand;
 
+  // Use the human-readable pill label for the heading when possible,
+  // falling back to the raw DB value (e.g. "Accessories" → "Watches").
+  const categoryLabel =
+    PILL_CATEGORIES.find((c) => c.value === activeCategory)?.label ?? activeCategory;
+
   const headingLabel =
-    hasCategory && hasBrand ? `${activeCategory} · ${activeBrand}` :
-    hasBrand                ? activeBrand                           :
-    hasCategory             ? activeCategory                        :
+    hasCategory && hasBrand ? `${categoryLabel} · ${activeBrand}` :
+    hasBrand                ? activeBrand                          :
+    hasCategory             ? categoryLabel                        :
                               "All Products";
 
   const { rest: headingRest, last: headingLast } = splitHeading(headingLabel);
 
-  // Breadcrumb segments — rendered separately so each part can be distinct
   const breadcrumbTrail: string[] = [];
-  if (hasCategory) breadcrumbTrail.push(activeCategory);
+  if (hasCategory) breadcrumbTrail.push(categoryLabel);
   if (hasBrand)    breadcrumbTrail.push(activeBrand);
 
   return (
@@ -216,7 +191,7 @@ function ProductsInner() {
       <section className="bg-white pt-24 pb-10 md:pt-32 md:pb-14">
         <div className="mx-auto max-w-6xl px-5 lg:px-0">
 
-          {/* Eyebrow / breadcrumb — "— The Edit › Women › Nike" */}
+          {/* Breadcrumb */}
           <div className="mb-4 flex items-center gap-1.5 font-jet text-[10px] uppercase tracking-[0.35em]">
             <span className="text-black/45">— The Edit</span>
             {breadcrumbTrail.map((segment) => (
@@ -228,13 +203,13 @@ function ProductsInner() {
           </div>
 
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            {/* Dynamic h1 — italic last word */}
+            {/* Dynamic heading — last word italic */}
             <h1 className="font-fraunces text-4xl font-light leading-none tracking-[-0.045em] sm:text-5xl lg:text-6xl">
               {headingRest && <>{headingRest} </>}
               <em className="italic">{headingLast}.</em>
             </h1>
 
-            {/* Search + Sort */}
+            {/* Search + Sort + Filter toggle */}
             <div className="flex flex-wrap items-center gap-3">
               <input
                 type="text"
@@ -267,11 +242,11 @@ function ProductsInner() {
             </div>
           </div>
 
-          {/* Category pills — scoped to the active brand, stay highlighted
-              even when a brand is also active */}
+          {/* ── Category pills — hardcoded, max 12 ────────────────────────── */}
           <div className="mt-5 flex flex-wrap gap-2">
+            {/* "All" pill */}
             <button
-              onClick={() => handleCategoryChange("All")}
+              onClick={() => updateUrl({ category: "All" })}
               className={`rounded-full px-3.5 py-1.5 font-jet text-[10px] uppercase tracking-[0.2em] transition-colors ${
                 activeCategory === "All"
                   ? "bg-black text-white"
@@ -280,17 +255,19 @@ function ProductsInner() {
             >
               All
             </button>
-            {categories.slice(0, 12).map((cat) => (
+
+            {/* Static category pills */}
+            {PILL_CATEGORIES.map(({ label, value }) => (
               <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
+                key={value}
+                onClick={() => updateUrl({ category: value })}
                 className={`rounded-full px-3.5 py-1.5 font-jet text-[10px] uppercase tracking-[0.2em] transition-colors ${
-                  activeCategory === cat
+                  activeCategory === value
                     ? "bg-black text-white"
                     : "border border-black/20 text-black/60 hover:border-black hover:text-black"
                 }`}
               >
-                {cat}
+                {label}
               </button>
             ))}
           </div>
@@ -299,19 +276,24 @@ function ProductsInner() {
           {showFilters && (
             <div className="mt-4 border border-black/10 p-5">
               <div className="flex flex-wrap items-end gap-5">
+                {/* Brand — scoped to the active category */}
                 <div>
                   <label className="mb-1.5 block font-jet text-[9px] uppercase tracking-[0.3em] text-black/40">
-                    Brand{hasCategory ? ` (in ${activeCategory})` : ""}
+                    Brand{hasCategory ? ` (in ${categoryLabel})` : ""}
                   </label>
                   <select
                     value={activeBrand}
-                    onChange={(e) => handleBrandChange(e.target.value)}
+                    onChange={(e) => updateUrl({ brand: e.target.value })}
                     className="h-9 border border-black/20 bg-white px-3 font-jet text-[10px] text-black outline-none focus:border-black min-w-40"
                   >
                     <option value="">All Brands</option>
-                    {brands.map((b) => <option key={b} value={b}>{b}</option>)}
+                    {brands.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
                   </select>
                 </div>
+
+                {/* Price range */}
                 <div>
                   <label className="mb-1.5 block font-jet text-[9px] uppercase tracking-[0.3em] text-black/40">Min Price</label>
                   <input
@@ -332,6 +314,7 @@ function ProductsInner() {
                     className="h-9 w-24 border border-black/20 bg-transparent px-3 font-jet text-[10px] text-black outline-none focus:border-black"
                   />
                 </div>
+
                 <button
                   onClick={resetFilters}
                   className="flex h-9 items-center gap-1.5 font-jet text-[10px] uppercase tracking-[0.2em] text-black/40 hover:text-black"
@@ -341,11 +324,10 @@ function ProductsInner() {
                 </button>
               </div>
 
-              {/* Active brand chip — confirm both filters to the user */}
               {hasBrand && hasCategory && (
                 <p className="mt-4 font-jet text-[9px] uppercase tracking-[0.25em] text-black/35">
                   Showing <span className="text-black/60">{activeBrand}</span> within{" "}
-                  <span className="text-black/60">{activeCategory}</span>
+                  <span className="text-black/60">{categoryLabel}</span>
                 </p>
               )}
             </div>
@@ -390,7 +372,6 @@ function ProductsInner() {
             </div>
           )}
 
-          {/* Pagination */}
           {lastPage > 1 && (
             <div className="mt-16 flex items-center justify-center gap-2">
               <button
