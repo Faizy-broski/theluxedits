@@ -3,6 +3,7 @@ import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // export const fraunces = Fraunces({
 //   subsets: ["latin"],
@@ -42,10 +43,13 @@ export default function RootLayout({
        h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider><CartProvider>{children}</CartProvider></AuthProvider>
+        <AuthProvider>
+          <CartProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
-      // ${fraunces.variable}
-
+// ${fraunces.variable}
