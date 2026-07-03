@@ -7,8 +7,8 @@
 // ---------------------------------------------------------------------------
 
 const MOCK_CREDENTIALS = {
-  email: "faizan@example.com",
-  password: "password123",
+  email: "admin@gmail.com",
+  password: "123123123",
 };
 
 export interface LoginFormValues {
