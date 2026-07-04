@@ -268,7 +268,7 @@ export default function AdminOrderDetailPage() {
                   <div key={item.id} className="flex items-center gap-4 px-5 py-3.5">
                     {item.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={resolveImageUrl(item.image_url)} alt={item.title}
+                      <img src={resolveImageUrl(item.image_url) ?? undefined} alt={item.title}
                         className="h-14 w-14 flex-shrink-0 rounded-lg bg-neutral-50 object-contain border border-black/6" />
                     ) : (
                       <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100">
