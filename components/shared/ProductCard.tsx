@@ -78,41 +78,68 @@ export default function ProductCard({ product, variant = "home" }: Props) {
             </div>
           )}
 
-          {/* Action buttons — slide up on hover */}
-          <div
-            className={[
-              "absolute inset-x-0 bottom-0 flex gap-px transition-all duration-300",
-              alwaysShow
-                ? "translate-y-0 opacity-100"
-                : "translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
-            ].join(" ")}
-          >
-            <span className="flex flex-1 items-center justify-center gap-1.5 bg-white/95 py-3 font-jet text-[9px] uppercase tracking-[0.18em] text-black backdrop-blur-sm transition-colors hover:bg-white">
-              <Eye className="h-3 w-3" strokeWidth={1.4} />
-              View
-            </span>
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className={[
-                "flex flex-1 items-center justify-center gap-1.5 py-3 font-jet text-[9px] uppercase tracking-[0.18em] transition-colors",
-                added
-                  ? "bg-black/60 text-white"
-                  : "bg-black text-white hover:bg-black/80",
-              ].join(" ")}
-            >
-              {added ? (
-                "Added ✓"
-              ) : (
-                <>
-                  <ShoppingBag className="h-3 w-3" strokeWidth={1.4} />
-                  Add
-                </>
-              )}
-            </button>
-          </div>
+          {/* Action buttons — slide up on hover (home variant only) */}
+          {!alwaysShow && (
+            <div className="absolute inset-x-0 bottom-0 flex gap-px translate-y-full opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              <span className="flex flex-1 items-center justify-center gap-1.5 bg-white/95 py-3 font-jet text-[9px] uppercase tracking-[0.18em] text-black backdrop-blur-sm transition-colors hover:bg-white">
+                <Eye className="h-3 w-3" strokeWidth={1.4} />
+                View
+              </span>
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className={[
+                  "flex flex-1 items-center justify-center gap-1.5 py-3 font-jet text-[9px] uppercase tracking-[0.18em] transition-colors",
+                  added
+                    ? "bg-black/60 text-white"
+                    : "bg-black text-white hover:bg-black/80",
+                ].join(" ")}
+              >
+                {added ? (
+                  "Added ✓"
+                ) : (
+                  <>
+                    <ShoppingBag className="h-3 w-3" strokeWidth={1.4} />
+                    Add
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </Link>
+
+      {/* Action buttons — sit below the image, don't overlap it (listing variant) */}
+      {alwaysShow && (
+        <div className="mt-2 flex gap-px">
+          <Link
+            href={`/products/${product.id}`}
+            className="flex flex-1 items-center justify-center gap-1.5 border border-black/10 bg-[#f5f5f5] py-2.5 font-jet text-[9px] uppercase tracking-[0.18em] text-black transition-colors hover:bg-[#efefef]"
+          >
+            <Eye className="h-3 w-3" strokeWidth={1.4} />
+            View
+          </Link>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className={[
+              "flex flex-1 items-center justify-center gap-1.5 py-2.5 font-jet text-[9px] uppercase tracking-[0.18em] transition-colors",
+              added
+                ? "bg-black/60 text-white"
+                : "bg-black text-white hover:bg-black/80",
+            ].join(" ")}
+          >
+            {added ? (
+              "Added ✓"
+            ) : (
+              <>
+                <ShoppingBag className="h-3 w-3" strokeWidth={1.4} />
+                Add
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* ── Info ── */}
       <div className="mt-3 flex flex-col gap-0.5 border-b border-black/8 pb-4">
