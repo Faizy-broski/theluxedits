@@ -59,10 +59,7 @@ export default function ProductCard({ product, variant = "home" }: Props) {
 
       {/* ── Image container ── */}
       <Link href={`/products/${product.id}`} className="block">
-        <div
-          className="relative overflow-hidden bg-[#f5f5f5]"
-          style={{ aspectRatio: "4/5" }}
-        >
+        <div className="relative overflow-hidden bg-[#f5f5f5]">
           {resolvedSrc && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -70,10 +67,10 @@ export default function ProductCard({ product, variant = "home" }: Props) {
               alt={product.title}
               onError={() => setImgError(true)}
               loading="lazy"
-              className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+              className="block w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
-            <div className="flex h-full items-center justify-center">
+            <div className="flex aspect-[4/5] items-center justify-center">
               <svg className="h-12 w-12 text-black/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8">
                 <path d="M6 2h12l4 5v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7l4-5z"/>
                 <path d="M9 22V12h6v10M3 7h18"/>

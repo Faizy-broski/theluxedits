@@ -15,7 +15,9 @@
       "Bash(curl -s http://localhost:3000/auth/login -o /dev/null -w \"login: %{http_code}\\\\n\")",
       "Bash(tail -n 10 .next/dev/logs/next-development.log)",
       "Bash(curl -s http://localhost:3000/products -o /dev/null -w \"products: %{http_code}\\\\n\")",
-      "Bash(curl -s -o /dev/null -w \"login page http: %{http_code}\\\\n\" http://localhost:3000/admin/login)"
+      "Bash(curl -s -o /dev/null -w \"login page http: %{http_code}\\\\n\" http://localhost:3000/admin/login)",
+      "Bash(curl -s -o /dev/null -w \"products: %{http_code}\\\\n\" http://localhost:3000/products)",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" http://localhost:3000/)"
     ]
   }
 }
