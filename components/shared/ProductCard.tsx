@@ -90,13 +90,10 @@ export default function ProductCard({ product, variant = "home" }: Props) {
                 : "translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
             ].join(" ")}
           >
-            <Link
-              href={`/products/${product.id}`}
-              className="flex flex-1 items-center justify-center gap-1.5 bg-white/95 py-3 font-jet text-[9px] uppercase tracking-[0.18em] text-black backdrop-blur-sm transition-colors hover:bg-white"
-            >
+            <span className="flex flex-1 items-center justify-center gap-1.5 bg-white/95 py-3 font-jet text-[9px] uppercase tracking-[0.18em] text-black backdrop-blur-sm transition-colors hover:bg-white">
               <Eye className="h-3 w-3" strokeWidth={1.4} />
               View
-            </Link>
+            </span>
             <button
               type="button"
               onClick={handleAddToCart}

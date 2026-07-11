@@ -42,7 +42,7 @@ export default function RootLayout({
        h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider><CartProvider>{children}</CartProvider></AuthProvider>
+        <CartProvider><AuthProvider>{children}</AuthProvider></CartProvider>
       </body>
     </html>
   );

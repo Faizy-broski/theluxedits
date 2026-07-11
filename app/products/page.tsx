@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/homePage/Footer";
 import ProductCard from "@/components/shared/ProductCard";
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 
@@ -41,6 +41,7 @@ function ProductsInner() {
 
   const [activeCategory, setActiveCategory] = useState(searchParams.get("category") || "All");
   const [activeBrand, setActiveBrand] = useState(searchParams.get("brand") || "");
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [minPrice, setMinPrice] = useState("");
@@ -48,6 +49,16 @@ function ProductsInner() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Debounce search input so we don't fire a request per keystroke
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   // Sync state when URL params change (e.g. mega menu navigation)
   useEffect(() => {
@@ -57,6 +68,10 @@ function ProductsInner() {
   }, [searchParams]);
 
   const fetchProducts = useCallback(async () => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setLoading(true);
     try {
       const params: Record<string, string | number> = { page, per_page: 24, sort };
@@ -66,16 +81,17 @@ function ProductsInner() {
       if (minPrice) params.min_price = minPrice;
       if (maxPrice) params.max_price = maxPrice;
 
-      const { data } = await api.get("/products", { params });
+      const { data } = await api.get("/products", { params, signal: controller.signal });
       const withImages = (data.data as ApiProduct[]).filter(
         (p) => p.image_url && p.image_url.trim() !== ""
       );
       setProducts(withImages);
       setLastPage(data.last_page);
       setTotal(data.total);
+      setLoading(false);
     } catch {
+      if (controller.signal.aborted) return;
       setProducts([]);
-    } finally {
       setLoading(false);
     }
   }, [page, sort, activeCategory, activeBrand, search, minPrice, maxPrice]);
@@ -92,6 +108,7 @@ function ProductsInner() {
   function resetFilters() {
     setActiveCategory("All");
     setActiveBrand("");
+    setSearchInput("");
     setSearch("");
     setMinPrice("");
     setMaxPrice("");
@@ -124,8 +141,8 @@ function ProductsInner() {
             <div className="flex flex-wrap items-center gap-3">
               <input
                 type="text"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search products…"
                 className="h-9 border border-black/20 bg-transparent px-3 font-jet text-[10px] uppercase tracking-[0.15em] text-black placeholder-black/30 outline-none focus:border-black w-48"
               />

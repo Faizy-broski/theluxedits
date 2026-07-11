@@ -310,7 +310,12 @@ export default function Header() {
               <Link
                 href="/products"
                 onClick={closeMegaNow}
-                className="hidden items-center gap-2 border border-white bg-white px-4 py-2 font-mono text-[9px] uppercase tracking-[0.28em] text-black transition-all hover:bg-transparent hover:text-white md:flex"
+                className={cn(
+                  "hidden items-center gap-2 border px-4 py-2 font-mono text-[9px] uppercase tracking-[0.28em] transition-all md:flex",
+                  isHome
+                    ? "border-white bg-white text-black hover:bg-transparent hover:text-white"
+                    : "border-black bg-black text-white hover:bg-transparent hover:text-black"
+                )}
               >
                 Shop The Edit
                 <ArrowUpRight className="h-3 w-3" strokeWidth={1.5} />

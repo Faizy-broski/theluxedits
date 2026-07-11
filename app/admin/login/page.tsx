@@ -1,10 +1,21 @@
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import {
+  Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, AlertCircle,
+  FileText, ShoppingBag, BarChart3, Boxes,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/lib/admin-auth-context";
+import { AuthShell } from "@/components/admin/auth/AuthShell";
+import { TestimonialCarousel } from "@/components/admin/auth/TestimonialCarousel";
+
+const FEATURE_CHIPS = [
+  { icon: FileText, label: "Orders" },
+  { icon: ShoppingBag, label: "Products" },
+  { icon: BarChart3, label: "Analytics" },
+];
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -38,120 +49,138 @@ export default function AdminLoginPage() {
     }
   }
 
-  return (
-    <div className="flex min-h-screen bg-neutral-950">
-      {/* Left panel */}
-      <div className="hidden w-1/2 flex-col justify-between bg-black p-12 lg:flex">
-        <Image
-          src="/logo/TheLuxEdits.png"
-          alt="TheLuxEdits"
-          width={160}
-          height={40}
-          className="h-8 w-auto object-contain brightness-0 invert"
-        />
-        <div>
-          <h1 className="font-fraunces text-5xl font-light leading-tight text-white">
-            Manage smarter.<br />
-            <em className="italic">Sell better.</em>
-          </h1>
-          <p className="mt-4 text-sm text-white/45">
-            Control your luxury product catalogue, orders, and inventory — all from one dashboard.
-          </p>
-          <div className="mt-10 grid grid-cols-3 gap-4">
-            {[
-              { label: "Products", desc: "Manage catalogue" },
-              { label: "Orders",   desc: "Track fulfilment" },
-              { label: "Revenue",  desc: "Live analytics" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-xl border border-white/10 p-4">
-                <p className="text-sm font-medium text-white">{item.label}</p>
-                <p className="mt-1 text-[11px] text-white/40">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+  const left = (
+    <>
+      <span className="font-against text-[26px] tracking-wide text-[#F7F3EA]">TheLuxEdits</span>
+
+      <div className="my-auto max-w-sm py-14">
+        <h1 className="font-fraunces text-[34px] font-light leading-[1.15] text-[#F7F3EA]">
+          Manage smarter.
+          <br />
+          Sell better.
+        </h1>
+        <p className="mt-4 text-[14.5px] leading-relaxed text-[#C9CFC7]">
+          Control your luxury product catalogue, orders, pricing, and
+          inventory — all from one powerful dashboard.
+        </p>
+
+        <div className="mt-8 grid grid-cols-3 gap-3">
+          {FEATURE_CHIPS.map(({ icon: Icon, label }) => (
+            <div key={label} className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-4 text-center">
+              <Icon className="mx-auto mb-1.5 h-4 w-4 text-[#B08D57]" />
+              <p className="font-jet text-[10px] uppercase tracking-wider text-[#C9CFC7]">{label}</p>
+            </div>
+          ))}
         </div>
-        <p className="text-[11px] text-white/20">© {new Date().getFullYear()} TheLuxEdits. Admin Panel.</p>
       </div>
 
-      {/* Right panel — login form */}
-      <div className="flex flex-1 items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="mb-8 lg:hidden">
-            <Image
-              src="/logo/TheLuxEdits.png"
-              alt="TheLuxEdits"
-              width={140}
-              height={36}
-              className="h-7 w-auto object-contain brightness-0 invert"
+      <TestimonialCarousel />
+    </>
+  );
+
+  const right = (
+    <>
+      <span className="font-against mb-8 block text-[22px] tracking-wide text-[#0E1B16] lg:hidden">
+        TheLuxEdits
+      </span>
+
+      <p className="font-jet mb-1 text-[11px] uppercase tracking-[0.2em] text-[#B08D57]">Welcome back</p>
+      <h2 className="font-fraunces text-[26px] font-normal text-[#26302B]">Sign in</h2>
+      <p className="mt-2 text-sm text-[#6B7568]">
+        Sign in to your TheLuxEdits admin account to continue.
+      </p>
+
+      {error && (
+        <div className="mt-5 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-800">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+        <div className="space-y-1.5">
+          <label htmlFor="email" className="font-jet text-[11px] uppercase tracking-wider text-[#6B7568]">
+            Email Address
+          </label>
+          <div className="flex items-center gap-2.5 rounded-lg border border-[#E1DBCB] bg-white px-3.5 py-2.5 transition-colors focus-within:border-[#B08D57] focus-within:ring-1 focus-within:ring-[#B08D57]">
+            <Mail className="h-4 w-4 shrink-0 text-[#9A8F76]" />
+            <input
+              id="email"
+              type="email"
+              autoFocus
+              required
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-transparent text-sm text-[#26302B] outline-none placeholder:text-[#B4AC98]"
             />
           </div>
-
-          <h2 className="mb-1 text-2xl font-semibold text-white">Welcome back</h2>
-          <p className="mb-8 text-sm text-white/40">Sign in to your admin account</p>
-
-          {error && (
-            <div className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="mb-1.5 block font-jet text-[10px] uppercase tracking-[0.2em] text-white/40">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoFocus
-                placeholder="admin@theluxedits.com"
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/25 outline-none transition focus:border-white/30 focus:bg-white/8"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block font-jet text-[10px] uppercase tracking-[0.2em] text-white/40">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPw ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 pr-11 text-sm text-white placeholder-white/25 outline-none transition focus:border-white/30 focus:bg-white/8"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw((p) => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
-                >
-                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-white py-3 text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-60"
-            >
-              {submitting ? (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black" />
-              ) : (
-                <>
-                  <LogIn className="h-4 w-4" strokeWidth={1.8} />
-                  Sign In
-                </>
-              )}
-            </button>
-          </form>
         </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="password" className="font-jet text-[11px] uppercase tracking-wider text-[#6B7568]">
+            Password
+          </label>
+          <div className="flex items-center gap-2.5 rounded-lg border border-[#E1DBCB] bg-white px-3.5 py-2.5 transition-colors focus-within:border-[#B08D57] focus-within:ring-1 focus-within:ring-[#B08D57]">
+            <Lock className="h-4 w-4 shrink-0 text-[#9A8F76]" />
+            <input
+              id="password"
+              type={showPw ? "text" : "password"}
+              required
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-transparent text-sm text-[#26302B] outline-none placeholder:text-[#B4AC98]"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw((v) => !v)}
+              className="shrink-0 text-[#9A8F76] hover:text-[#26302B]"
+              aria-label={showPw ? "Hide password" : "Show password"}
+            >
+              {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className={cn(
+            "flex w-full items-center justify-center gap-2 rounded-lg bg-[#0E1B16] py-3 text-sm font-medium text-[#F7F3EA] transition-colors hover:bg-[#16281F] disabled:opacity-70"
+          )}
+        >
+          {submitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              Sign In
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
+        </button>
+      </form>
+
+      <div className="my-7 flex items-center gap-3">
+        <div className="h-px flex-1 bg-[#E1DBCB]" />
+        <p className="font-jet text-[10px] uppercase tracking-wider text-[#B4AC98]">Dashboard features</p>
+        <div className="h-px flex-1 bg-[#E1DBCB]" />
       </div>
-    </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { icon: FileText, label: "Orders" },
+          { icon: BarChart3, label: "Analytics" },
+          { icon: Boxes, label: "Inventory" },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} className="rounded-lg border border-dashed border-[#D6CFB8] px-2 py-3 text-center">
+            <Icon className="mx-auto mb-1 h-4 w-4 text-[#8C9A8F]" />
+            <p className="text-[11px] text-[#6B7568]">{label}</p>
+          </div>
+        ))}
+      </div>
+    </>
   );
+
+  return <AuthShell left={left} right={right} />;
 }

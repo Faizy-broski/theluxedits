@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm ls *)",
+      "Bash(node -e \"require.resolve\\('playwright'\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(curl -s http://localhost:3000/products -o /dev/null -w \"products page http: %{http_code}\\\\n\")",
+      "Bash(tail -n 40 .next/dev/logs/next-development.log)",
+      "Bash(> /tmp/before_size.txt)",
+      "Bash(wc -l .next/dev/logs/next-development.log)",
+      "Bash(curl -s \"http://localhost:3000/products?search=bag\" -o /dev/null -w \"reload http: %{http_code}\\\\n\")",
+      "Bash(tail -n 5 .next/dev/logs/next-development.log)",
+      "Bash(curl -s http://localhost:3000/ -o /dev/null -w \"home: %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/cart -o /dev/null -w \"cart: %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/auth/login -o /dev/null -w \"login: %{http_code}\\\\n\")",
+      "Bash(tail -n 10 .next/dev/logs/next-development.log)",
+      "Bash(curl -s http://localhost:3000/products -o /dev/null -w \"products: %{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"login page http: %{http_code}\\\\n\" http://localhost:3000/admin/login)"
+    ]
+  }
+}

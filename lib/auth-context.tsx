@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import api from "./api";
+import { useCart } from "./cart-context";
 
 export interface AuthUser {
   id: number;
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { clearCart } = useCart();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("luxx-token");
@@ -78,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     localStorage.removeItem("luxx-token");
     localStorage.removeItem("luxx-user");
+    clearCart();
   }
 
   async function updateProfile(formData: Partial<AuthUser> & { password?: string; password_confirmation?: string }) {
